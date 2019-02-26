@@ -1,4 +1,5 @@
 //initialization file
+#include "Definitions.h"
 
 int SQ120ToSQ64[BRD_SQ_NUM];
 int SQ64ToSQ120[64];
