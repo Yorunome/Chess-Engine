@@ -1,17 +1,20 @@
 //main program
 #include "stdafx.h"
 #include <iostream>
-#include "Definitions.h"
+#include "init.cpp"
 
 
 using namespace std;
 
 int main(){
 	AllInit();
-	int index = 0;
-	for (index = 0; index < 64; index++) {
-		if (index % 10 == 0) cout << endl;
-		cout << SQ64ToSQ120[index];
+	int ctr = -1;
+	for (auto index = 0; index < 64; index++) {
+		ctr++;
+		if (ctr == 8) {
+			cout << endl; ctr = 0;
+		}
+		cout << SQ64ToSQ120[index] << "\t";
 	}
 
 	return 0;
