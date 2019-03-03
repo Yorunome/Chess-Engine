@@ -3,6 +3,24 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <cstdlib>
+
+//for file debugging
+/*#define DEBUG
+
+#ifndef DEBUG
+#define ASSERT(n)
+#else
+#define ASSERT(n)		\
+if (!(n)){		\
+printf("%s - Failed", #n);		\
+printf("On %s ", __DATE__);		\
+printf("On %s ", __TIME__);		\
+printf("In File %s ", __FILE__);	\
+printf("At Line %s ", __LINE__);	\
+exit(1);
+#endif
+*/
 typedef unsigned long long U64;			//for bitboard
 
 #define NAME "Engine 1.0"
@@ -49,35 +67,62 @@ typedef struct{
 	
 	int KingSq[2];
 	
-	int side;			//current side to move
+	int side;				//current side to move
 	int enPas;
-	int fiftyMove;		//draw condition if no pieces are captured within 50 moves
+	int fiftyMove;			//draw condition if no pieces are captured within 50 moves
 	
-	int ply;			//half moves in the game (goes up to 100)
-	int hisPly;			//total no. of half moves in the game so far
+	int ply;				//half moves in the game (goes up to 100)
+	int hisPly;				//total no. of half moves in the game so far
 
-	int castlePerm;		//possible castling permutations
+	int castlePerm;			//possible castling permutations
 
-	U64 posKey;			//unique key generated for each position
+	U64 posKey;				//unique key generated for each position
 
 	int posNum[13];			//no. of pieces remaining on the board (from the enum)
 	int bigPiece[3];		//pieces that are pawns (black, white and both)
 	int majorPiece[3];		//rooks and queens
 	int minorPiece[3];		//knights and bishops
 
-	S_UNDO history[MAXGAMEMOVES];			//object for storing board history indexed by hisPly
+	S_UNDO history[MAXGAMEMOVES];		//object for storing board history indexed by hisPly
+
+	//piece list (for generating moves, based on colour), 
+	//enhances search and move generation
+	//10 is maximum possibility for a single piece type (eg. 2R + 8 Promoted Pawns)
+	// eg. plist[wN][0] = E1  --- add white knight to position and 
+	//keep generating positions until no square
+	int pList[13][10];			
 	
+
 
 } S_BOARD;
 
 //macro that returns a number based on the 120 positions array given the file and rank
 #define FR2SQ(f, r) ( (21 + (f) ) + ( (r) * 10) ) 
+//macro for shortening the array 
+#define SQ64(sq120) SQ120ToSQ64[sq120]
+//macro for the popping function
+#define POP(b) popBit(b)
+//macro for counting
+#define cnt(b) countBits(b)
+//macro for setting up and clearing the masks
+#define setbit(bb, sq) ((bb) &= SetMask[(sq)])
+#define clrbit(bb, sq) ((bb) |= ClearMask[(sq)])
 
 //globals for deriving the piece position from the 120 bit board to 64 bit board and vice versa
 extern int SQ120ToSQ64[BRD_SQ_NUM];
 extern int SQ64ToSQ120[64];
 
+//globals for setting and clearing positions on bitboard
+extern U64 SetMask[64];
+extern U64 ClearMask[64];
+
+
 //initialization functions
 extern void AllInit();
+
+//bitboard functions
+extern void printBitBoard(U64 bb);
+extern int popBit(U64 *bb);
+extern int countBits(U64 b);
 
 #endif

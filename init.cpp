@@ -1,8 +1,23 @@
 //initialization file
 #include "Definitions.h"
+#include "bitboard.cpp"
 
 int SQ120ToSQ64[BRD_SQ_NUM];
 int SQ64ToSQ120[64];
+
+U64 SetMask[64];
+U64 ClearMask[64];
+
+void InitBitMask(){
+	/*for (int index = 0; index < 64; index++) {
+		SetMask[index] = 0ULL;
+		ClearMask[index] = 0ULL;
+	}*/
+	for (int index = 0; index < 64; index++){
+		SetMask[index] |= (1ULL << index);
+		ClearMask[index] = ~SetMask[index];
+	}
+}
 
 //for initializing the SQ120toSQ64 array
 void InitSQ120To64(){
@@ -32,4 +47,5 @@ void InitSQ120To64(){
 
 void AllInit(){
 	InitSQ120To64();
+	InitBitMask();
 }
