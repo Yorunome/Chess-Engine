@@ -24,9 +24,9 @@ exit(1);
 typedef unsigned long long U64;			//for bitboard
 
 #define NAME "Engine 1.0"
-#define BRD_SQ_NUM 120					//total required positions of concern
+#define BRD_SQ_NUM 120				//total required positions of concern
 
-#define MAXGAMEMOVES 2048				//maximum no. of moves to contain history of the game
+#define MAXGAMEMOVES 2048			//maximum no. of moves to contain history of the game
 
 //board pieces and positions definition
 
@@ -44,10 +44,10 @@ enum{
 	A5 = 61, B5, C5, D5, E5, F5, G5, H5,
 	A6 = 71, B6, C6, D6, E6, F6, G6, H6,
 	A7 = 81, B7, C7, D7, E7, F7, G7, H7,
-	A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ
-};													//board positions
+	A8 = 91, B8, C8, D8, E8, F8, G8, H8, NO_SQ, OFFBOARD
+};									//board positions
 
-enum { FALSE, TRUE };								//constants for true/false
+enum { FALSE, TRUE };				//constants for true/false
 
 //castling information (eg. King goes from E1 to G1 and Rook goes from H1 to F1 for King Castling)
 enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 };
@@ -99,7 +99,9 @@ typedef struct{
 //macro that returns a number based on the 120 positions array given the file and rank
 #define FR2SQ(f, r) ( (21 + (f) ) + ( (r) * 10) ) 
 //macro for shortening the array 
-#define SQ64(sq120) SQ120ToSQ64[sq120]
+#define SQ64(sq120) (SQ120ToSQ64[sq120])
+//macro for resetting the board
+#define SQ120(sq64) (SQ64ToSQ120[sq64])
 //macro for the popping function
 #define POP(b) popBit(b)
 //macro for counting
@@ -116,6 +118,10 @@ extern int SQ64ToSQ120[64];
 extern U64 SetMask[64];
 extern U64 ClearMask[64];
 
+//globals for the piece keys
+extern U64 PieceKeys[13][120];
+extern U64 SideKey;
+extern U64 CastleKeys[16]; 
 
 //initialization functions
 extern void AllInit();
@@ -124,5 +130,11 @@ extern void AllInit();
 extern void printBitBoard(U64 bb);
 extern int popBit(U64 *bb);
 extern int countBits(U64 b);
+
+//hashkey functions
+extern U64 GeneratePoskKey(const S_BOARD *pos);
+
+//board functions
+extern void ResetBoard(S_BOARD *pos);
 
 #endif

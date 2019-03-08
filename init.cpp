@@ -1,12 +1,44 @@
 //initialization file
 #include "Definitions.h"
 #include "bitboard.cpp"
+#include "HashKey.cpp"
+#include "board.cpp"
+#include <cstdlib>
+
+//filling 64 bits with random numbers
+//rand() generates a 15 bit random number
+/* line 0: 0000 000000000000000 000000000000000 000000000000000 000000000000000 
+ * line 1: 0000 000000000000000 000000000000000 000000000000000 001111001111010 (random no. generated)
+ * line 2: 0000 000000000000000 000000000000000 001111001111010 000000000000000	(shifted by 15 bits)
+ * line 3: 0000 000000000000000 001111001111010 000000000000000 000000000000000	(shifted by 30 bits)
+ * line 4: 0000 001111001111010 000000000000000 000000000000000 000000000000000	(shifted by 45 bits)
+ * line 5: 0011 000000000000000 000000000000000 000000000000000 000000000000000 (taking the four bits of the rn and then shifting by 60)
+ */
+#define RAND_64 (	(U64)rand + \
+					(U64)rand << 15 + \
+					(U64)rand << 30 + \
+					(U64)rand << 45 + \
+					((U64)rand & 0xf) << 60 )
 
 int SQ120ToSQ64[BRD_SQ_NUM];
 int SQ64ToSQ120[64];
 
 U64 SetMask[64];
 U64 ClearMask[64];
+
+U64 PieceKeys[13][120];		//13 is for indexing pieces, 120 is for indexing board positions
+U64 SideKey;				//just one random number for the side positions
+U64 CastleKeys[16];			//for castling positions
+
+//function for initializing the piece keys with random 64 bit numbers
+void InitHashKeys(){
+	for (int index_1 = 0; index_1 < 13; index_1++)
+		for (int index_2 = 0; index_2 < 120; index_2++)
+			PieceKeys[index_1][index_2] = RAND_64;
+	SideKey = RAND_64;
+	for (int index = 0; index < 16; index++)
+		CastleKeys[index] = RAND_64;
+}
 
 void InitBitMask(){
 	/*for (int index = 0; index < 64; index++) {
@@ -48,4 +80,5 @@ void InitSQ120To64(){
 void AllInit(){
 	InitSQ120To64();
 	InitBitMask();
+	InitHashKeys();
 }
